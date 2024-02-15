@@ -26,7 +26,7 @@ export async function getInitialState(): Promise<{
       });
       return msg.data;
     } catch (error) {
-      history.push(loginPath);
+      // history.push(loginPath);
     }
     return undefined;
   };
@@ -63,8 +63,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history;
+      // 不重定向白名单
+      const whiteList = ['/user/register', loginPath];
+      //  如果在白名单中，不重定向
+      if (whiteList.includes(location.pathname)) {
+        return ;
+      }
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      if (!initialState?.currentUser) {
         history.push(loginPath);
       }
     },
