@@ -11,12 +11,13 @@ export default [
     name: '管理页',
     icon: 'crown',
     access: 'canAdmin',
+    component: './Admin',
     routes: [
-      { path: '/admin', redirect: '/admin/sub-page' },
-      { path: '/admin/sub-page', name: '二级管理页', component: './Admin' },
+      { path: '/admin/user-manage', name: '用户管理', component: './Admin/UserManage' },
+      { path: '/admin', redirect: '/admin' },
     ],
   },
-  { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
+  // { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
   { path: '/', redirect: '/welcome' },
   { path: '*', layout: false, component: './404' },
 ];
