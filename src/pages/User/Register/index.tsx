@@ -59,7 +59,7 @@ const RegisterMessage: React.FC<{
   );
 };
 const Register: React.FC = () => {
-  const [type, setType] = useState<string>('account');
+  const [type, setType] = useState<string>('register');
   const { styles } = useStyles();
   const handleSubmit = async (values: API.RegisterParams) => {
     const { userPassword, checkPassword} = values
@@ -69,10 +69,10 @@ const Register: React.FC = () => {
     }
     try {
       // 注册
-      const id = await register({
+      const res = await register({
         ...values,
       });
-      if (id > 0) {
+      if (res > 0) {
         const defaultLoginSuccessMessage = '注册成功！';
         message.success(defaultLoginSuccessMessage);
         const urlParams = new URL(window.location.href).searchParams;
@@ -82,13 +82,11 @@ const Register: React.FC = () => {
         );
         return;
       } else {
-        throw new Error(`register error id = ${id}`);
+        return ;
       }
-      console.log(id);
-    } catch (error) {
+    } catch (error: any) {
       const defaultLoginFailureMessage = '注册失败，请重试！';
-      console.log(error);
-      message.error(defaultLoginFailureMessage);
+      message.error(error.message ?? defaultLoginFailureMessage);
     }
   };
   return (
@@ -130,7 +128,7 @@ const Register: React.FC = () => {
             centered
             items={[
               {
-                key: 'account',
+                key: 'register',
                 label: '账户密码注册',
               },
             ]}
@@ -139,7 +137,7 @@ const Register: React.FC = () => {
           {status === 'error'  && (
             <RegisterMessage content={'错误的账户和密码'} />
           )}
-          {type === 'account' && (
+          {type === 'register' && (
             <>
               <ProFormText
                 name="userAccount"
@@ -195,6 +193,25 @@ const Register: React.FC = () => {
                     min: 8,
                     type: "string",
                     message: '密码是必须大于8位！',
+                  },
+                ]}
+              />
+              <ProFormText
+                name="planetCode"
+                fieldProps={{
+                  size: 'large',
+                  prefix: <UserOutlined />,
+                }}
+                placeholder={'星球编码: '}
+                rules={[
+                  {
+                    required: true,
+                    message: '星球编码是必填项！',
+                  },
+                  {
+                    max: 5,
+                    type: "string",
+                    message: '星球编码必须小于等于5位！',
                   },
                 ]}
               />

@@ -15,7 +15,7 @@ import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
-import {GITHUB_URL, SYSTEM_LOGO} from "@/constants";
+import {SYSTEM_LOGO} from "@/constants";
 const useStyles = createStyles(({ token }) => {
   return {
     action: {
@@ -66,14 +66,14 @@ const LoginMessage: React.FC<{
   );
 };
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
-  const [type, setType] = useState<string>('account');
+  const [type, setType] = useState<string>('login');
   const { initialState, setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
     if (userInfo) {
       flushSync(() => {
+        // @ts-ignore
         setInitialState((s) => ({
           ...s,
           currentUser: userInfo,
@@ -84,11 +84,12 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const msg = await login({
+      const res = await login({
         ...values,
         type,
       });
-      if (msg) {
+      console.log(res);
+      if (res) {
         const defaultLoginSuccessMessage = '登录成功！';
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
@@ -96,16 +97,12 @@ const Login: React.FC = () => {
         history.push(urlParams.get('redirect') || '/');
         return;
       }
-      console.log(msg);
-      // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = '登录失败，请重试！';
       console.log(error);
       message.error(defaultLoginFailureMessage);
     }
   };
-  const { status, type: loginType } = userLoginState;
   return (
     <div className={styles.container}>
       <Helmet>
@@ -126,10 +123,7 @@ const Login: React.FC = () => {
           }}
           logo={<img alt="logo" src={SYSTEM_LOGO} />}
           title="用户中心"
-          subTitle={<a href={GITHUB_URL}
-                       target='_blank'
-                       rel="noreferrer"
-                       style={{textDecoration:"none", color:"#333"}}>作者为灵檠</a>}
+          subTitle={<p>作者: 灵檠，借鉴于鱼皮的用户中心项目</p>}
           initialValues={{
             autoLogin: true,
           }}
@@ -148,11 +142,10 @@ const Login: React.FC = () => {
               },
             ]}
           />
-
-          {status === 'error' && loginType === 'account' && (
+          {status === 'error' && (
             <LoginMessage content={'错误的账户和密码'} />
           )}
-          {type === 'account' && (
+          {type === 'login' && (
             <>
               <ProFormText
                 name="userAccount"

@@ -3,10 +3,11 @@ import {currentUser as queryCurrentUser} from '@/services/ant-design-pro/api';
 import {LinkOutlined} from '@ant-design/icons';
 import type {Settings as LayoutSettings} from '@ant-design/pro-components';
 import {SettingDrawer} from '@ant-design/pro-components';
-import type {RunTimeLayoutConfig} from '@umijs/max';
+import {RunTimeLayoutConfig} from '@umijs/max';
 import {history, Link} from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
-import {errorConfig} from './requestErrorConfig';
+import {message} from "antd";
+import {stringify} from "querystring";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -16,7 +17,7 @@ const NO_NEED_LOGIN_LIST = ['/user/register', loginPath];
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: API.CurrentUser;
+  currentUser: API.CurrentUser;
   loading?: boolean;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
@@ -36,10 +37,12 @@ export async function getInitialState(): Promise<{
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
+      // @ts-ignore
       currentUser,
       settings: defaultSettings as Partial<LayoutSettings>,
     };
   }
+  // @ts-ignore
   return {
     fetchUserInfo,
     settings: defaultSettings as Partial<LayoutSettings>,
@@ -117,7 +120,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
               enableDarkTheme
               settings={initialState?.settings}
               onSettingChange={(settings) => {
-                setInitialState((preInitialState) => ({
+                // @ts-ignore
+                setInitialState(preInitialState => ({
                   ...preInitialState,
                   settings,
                 }));
@@ -137,5 +141,28 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request = {
-  ...errorConfig,
+  // ...errorConfig,
+  responseInterceptors: [
+    (response: API.BaseResponse<any>) => {
+      const { data } = response;
+      if (data.code === 0) {
+        return data;
+      }
+      if (data.code === 40100) {
+        message.error("请先登录");
+        history.replace(
+          {
+            pathname: '/user/login',
+            search: stringify({
+              redirect: location.pathname,
+            }),
+          }
+        );
+      } else {
+        message.error(data.description);
+      }
+      return data;
+    }
+  ]
 };
+

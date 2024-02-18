@@ -11,14 +11,31 @@ declare namespace API {
     email?: string,
     userStatus?: string,
     avatarUrl?: string,
+    planetCode: string,
     createTime: Date,
     userRole: number,
   };
-
+  /**
+   * 通用返回类
+   */
+  type BaseResponse<T> = {
+    code: number,
+    data: T,
+    message: string,
+    description: string,
+  }
   type LoginResult = {
-    status?: string;
-    type?: string;
-    currentAuthority?: string;
+    id: number,
+    userAccount: string,
+    username?: string,
+    gender?: number,
+    phone?: string,
+    email?: string,
+    userStatus?: string,
+    avatarUrl?: string,
+    planetCode: string,
+    createTime: Date,
+    userRole: number,
   };
 
   type RegisterResult = number;
@@ -66,6 +83,7 @@ declare namespace API {
     userAccount?: string;
     userPassword?: string;
     checkPassword?: string;
+    planetCode?: string;
   };
 
   type ErrorResponse = {

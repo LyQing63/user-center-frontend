@@ -1,10 +1,9 @@
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import {Button, Image} from 'antd';
+import {App, Button, Image} from 'antd';
 import { useRef } from 'react';
 import {searchUsers} from "@/services/ant-design-pro/api";
-import {render} from "@testing-library/react";
 export const waitTimePromise = async (time: number = 100) => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -72,6 +71,11 @@ const columns: ProColumns<API.CurrentUser>[] = [
     },
   },
   {
+    title: '星球编号',
+    dataIndex: 'planetCode',
+    copyable: true,
+  },
+  {
     title: '用户角色',
     dataIndex: 'userRole',
     valueType: 'select',
@@ -90,10 +94,12 @@ const columns: ProColumns<API.CurrentUser>[] = [
 export default () => {
   const actionRef = useRef<ActionType>();
   return (
+    <App>
     <ProTable<API.CurrentUser>
       columns={columns}
       actionRef={actionRef}
       cardBordered
+      // @ts-ignore
       request={async (params, sort, filter) => {
         console.log(sort, filter);
         await waitTime(2000);
@@ -141,7 +147,7 @@ export default () => {
         onChange: (page) => console.log(page),
       }}
       dateFormatter="string"
-      headerTitle="高级表格"
+      headerTitle="用户数据"
       toolBarRender={() => [
         <Button
           key="button"
@@ -155,5 +161,6 @@ export default () => {
         </Button>,
       ]}
     />
+    </App>
   );
 };

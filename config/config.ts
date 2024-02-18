@@ -131,4 +131,8 @@ export default defineConfig({
   },
   esbuildMinifyIIFE: true,
   requestRecord: {},
+  favicons: [
+    // 此时将指向 `/favicon.png` ，确保你的项目含有 `public/favicon.png`
+    '/favicon.png'
+  ],
 });
