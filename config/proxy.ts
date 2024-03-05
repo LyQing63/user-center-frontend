@@ -43,17 +43,10 @@ export default {
   },
   dev: {
     '/api/': {
-      target: 'http://localhost:8080/api',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-    },
-  },
-  build: {
-    '/api/': {
       target: 'http://122.51.79.37:8080/api',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
-  }
+  },
 
 };
